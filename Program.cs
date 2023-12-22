@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //For log folder
 Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().
-    WriteTo.File("log/villaLogs.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+    WriteTo.File("log/villaLogs.log", rollingInterval: RollingInterval.Day).CreateLogger();
 
 builder.Host.UseSerilog();
 
