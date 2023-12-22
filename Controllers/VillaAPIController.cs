@@ -22,23 +22,23 @@ namespace MagicVilla_VillaAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<VillaDTO>> GetVillas()
+        public ActionResult<IEnumerable<PatientDTO>> GetVillas()
         {
 
-            return Ok(_context.Villas.ToList());
+            return Ok(_context.Patients.ToList());
         }
 
         [HttpGet("{id:int}", Name = "GetVilla")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<VillaDTO> GetVillas(int id)
+        public ActionResult<PatientDTO> GetVillas(int id)
         {
             if (id == 0)
             {
                 return BadRequest();
             }
-            var villa = _context.Villas.FirstOrDefault(u => u.Id == id);
+            var villa = _context.Patients.FirstOrDefault(u => u.Id == id);
 
             if (villa == null)
             {
@@ -51,13 +51,10 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<VillaDTO> CreateVilla([FromBody] VillaDTO villaDTO)
+        public ActionResult<PatientDTO> CreateVilla([FromBody] PatientDTO villaDTO)
         {
-            //if (!ModelState.IsValid) 
-            //{
-            //    return BadRequest(ModelState);
-            //}
-            if (_context.Villas.FirstOrDefault(u => u.Name.ToLower() == villaDTO.Name.ToLower()) != null)
+      
+            if (_context.Patients.FirstOrDefault(u => u.FirstName.ToLower() == villaDTO.FirstName.ToLower()) != null)
             {
                 ModelState.AddModelError("CustomError", "Villa already exist");
                 return BadRequest(ModelState);
@@ -72,19 +69,17 @@ namespace MagicVilla_VillaAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
-            Villa model = new()
+            Patient model = new()
             {
-                Amenity = villaDTO.Amenity,
-                Details = villaDTO.Details,
+                PhoneNumber = villaDTO.PhoneNumber,
+                LastName = villaDTO.LastName,
                 Id = villaDTO.Id,
-                Name = villaDTO.Name,
-                ImageUrl = villaDTO.ImageUrl,
-                Occupancy = villaDTO.Occupancy,
-                Rate = villaDTO.Rate,
-                Sqft = villaDTO.Sqft,
+                FirstName = villaDTO.FirstName,
+                Address = villaDTO.Address,
+                Email = villaDTO.Email
             };
 
-            _context.Villas.Add(model);
+            _context.Patients.Add(model);
             _context.SaveChanges();
 
             return CreatedAtRoute("GetVilla", new { id = villaDTO.Id }, villaDTO);
@@ -100,13 +95,13 @@ namespace MagicVilla_VillaAPI.Controllers
             {
                 return BadRequest();
             }
-            var villa = _context.Villas.FirstOrDefault(u => u.Id == id);
+            var villa = _context.Patients.FirstOrDefault(u => u.Id == id);
             if (villa == null)
             {
                 return NotFound();
             }
 
-            _context.Villas.Remove(villa);
+            _context.Patients.Remove(villa);
             _context.SaveChanges();
             return NoContent();
         }
@@ -114,30 +109,24 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPut("{id:int}", Name = "UpdateVilla")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateVilla(int id, [FromBody] VillaDTO villaDTO)
+        public IActionResult UpdateVilla(int id, [FromBody] PatientDTO villaDTO)
         {
             if (villaDTO == null || id != villaDTO.Id)
             {
                 return BadRequest();
             }
-            //var villa = _context.Villas.FirstOrDefault(u => u.Id == id);
-            //villa.Name = villaDTO.Name;
-            //villa.Occupancy = villaDTO.Occupancy;
-            //villa.Sqft = villaDTO.Sqft;
 
-            Villa model = new()
+            Patient model = new()
             {
-                Amenity = villaDTO.Amenity,
-                Details = villaDTO.Details,
+                PhoneNumber = villaDTO.PhoneNumber,
+                LastName = villaDTO.LastName,
                 Id = villaDTO.Id,
-                Name = villaDTO.Name,
-                ImageUrl = villaDTO.ImageUrl,
-                Occupancy = villaDTO.Occupancy,
-                Rate = villaDTO.Rate,
-                Sqft = villaDTO.Sqft,
+                FirstName = villaDTO.FirstName,
+                Address = villaDTO.Address,
+                Email = villaDTO.Email
             };
 
-            _context.Villas.Update(model);
+            _context.Patients.Update(model);
             _context.SaveChanges();
             return NoContent();
         }
@@ -145,45 +134,43 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPatch("{id:int}", Name = "UpdatePartialVilla")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaDTO> patchDTO)
+        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<PatientDTO> patchDTO)
         {
             if (patchDTO == null || id == 0)
             {
                 return BadRequest();
             }
-            var villa = _context.Villas.AsNoTracking().FirstOrDefault(u => u.Id == id);
+            var villa = _context.Patients.AsNoTracking().FirstOrDefault(u => u.Id == id);
 
 
-            VillaDTO villaDTO = new()
+            PatientDTO villaDTO = new()
             {
-                Amenity = villa.Amenity,
-                Details = villa.Details,
+                PhoneNumber = villa.PhoneNumber,
+                LastName = villa.LastName,
                 Id = villa.Id,
-                ImageUrl = villa.ImageUrl,
-                Name = villa.Name,
-                Occupancy = villa.Occupancy,
-                Rate = villa.Rate,
-                Sqft = villa.Sqft
+                Address = villa.Address,
+                FirstName = villa.FirstName,
+
             };
 
             if (villa == null)
             {
                 return BadRequest();
             }
+
             patchDTO.ApplyTo(villaDTO, ModelState);
-            Villa model = new Villa()
+
+            Patient model = new Patient()
             {
-                Amenity = villaDTO.Amenity,
-                Details = villaDTO.Details,
+                PhoneNumber = villaDTO.PhoneNumber,
+                LastName = villaDTO.LastName,
                 Id = villaDTO.Id,
-                ImageUrl = villaDTO.ImageUrl,
-                Name = villaDTO.Name,
-                Occupancy = villaDTO.Occupancy,
-                Rate = villaDTO.Rate,
-                Sqft = villaDTO.Sqft
+                Address = villaDTO.Address,
+                FirstName = villaDTO.FirstName,
+                Email = villaDTO.Email
             };
 
-            _context.Villas.Update(model);
+            _context.Patients.Update(model);
             _context.SaveChanges();
 
             if (!ModelState.IsValid)
