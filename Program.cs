@@ -1,4 +1,4 @@
-using MagicVilla_VillaAPI.Data;
+using CoinCapAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,13 +10,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection"));
 });
 
-builder.Services.AddControllers();
-builder.Services.AddControllers(option => {
-    // option.ReturnHttpNot?cceptable = true ;
-}).AddNewtonsoftJson();
+// Add services to the container.
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
